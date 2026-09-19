@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Executive Telemetry & Strategic Growth Optimization</title>
+  <!-- Chart.js for data visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --bg-card: #161b22;
+      --bg-card-border: #30363d;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --accent-blue: #388bfd;
+      --accent-cyan: #39c5cf;
+      --accent-amber: #d29922;
+      --accent-red: #f85149;
+      --accent-green: #3fb950;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* Presentation Container */
+    .deck-container {
+      width: 100%;
+      max-width: 1100px;
+      height: 720px;
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Bar */
+    .deck-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      border-bottom: 1px solid var(--bg-card-border);
+      background: rgba(22, 27, 34, 0.95);
+    }
+
+    .badge-confidential {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(248, 81, 73, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+
+    .deck-title-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Slide Body */
+    .slide-viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 36px 48px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    /* Typography */
+    h1.hero-title {
+      font-size: 2.8rem;
+      line-height: 1.15;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 14px;
+    }
+
+    h2.slide-heading {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    p.slide-subheading {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      max-width: 850px;
+    }
+
+    /* Grid Layouts */
+    .grid-kpi {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+    }
+
+    .grid-3col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    /* Card Panels */
+    .card {
+      background: rgba(13, 17, 23, 0.7);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 12px;
+      padding: 18px;
+      position: relative;
+    }
+
+    .kpi-card {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .kpi-card .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .kpi-card .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .kpi-card .delta {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .delta-green { color: var(--accent-green); }
+    .delta-red { color: var(--accent-red); }
+    .delta-amber { color: var(--accent-amber); }
+
+    /* Risk Bars */
+    .risk-bar-container {
+      margin-bottom: 14px;
+    }
+    .risk-bar-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: #21262d;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 6px;
+    }
+
+    /* Strategic Recommendations list */
+    .rec-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      padding: 14px 18px;
+      background: rgba(13, 17, 23, 0.5);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 6px 10px 10px 6px;
+    }
+
+    .rec-num {
+      width: 28px;
+      height: 28px;
+      background: var(--accent-blue);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .rec-content h4 {
+      font-size: 1rem;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .rec-content p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Bottom Controller */
+    .deck-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      border-top: 1px solid var(--bg-card-border);
+      background: rgba(22, 27, 34, 0.95);
+    }
+
+    .nav-btn {
+      background: #21262d;
+      color: #f0f6fc;
+      border: 1px solid var(--bg-card-border);
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: #30363d;
+      border-color: #8b949e;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #30363d;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dot.active {
+      width: 24px;
+      border-radius: 6px;
+      background: var(--accent-blue);
+    }
+
+    .chart-box {
+      position: relative;
+      height: 100%;
+      min-height: 230px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deck-container">
+    <!-- Top Meta -->
+    <header class="deck-header">
+      <span class="badge-confidential">Highly Confidential | Board Telemetry</span>
+      <span class="deck-title-meta">Executive Data Analyst Portfolio & Review</span>
+    </header>
+
+    <!-- Slide Viewport -->
+    <main class="slide-viewport">
+
+      <!-- Slide 1: Executive Title & Executive Thesis -->
+      <section class="slide active" id="slide-0">
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+          <span style="font-size: 0.85rem; text-transform: uppercase; color: var(--accent-blue); letter-spacing: 2px; font-weight: 700; margin-bottom: 10px;">
+            Learners Dashboard & Commercial Portfolio
+          </span>
+          <h1 class="hero-title">Strategic Telemetry & Operational Review</h1>
+          <p class="slide-subheading" style="font-size: 1.15rem; line-height: 1.5;">
+            Diagnosing structural vulnerabilities behind record top-line performance: reconciling explosive revenue velocity with critical working capital lockups and account concentration.
+          </p>
+
+          <div class="grid-3col" style="margin-top: 20px;">
+            <div class="card" style="border-top: 3px solid var(--accent-green);">
+              <h4 style="color: var(--accent-green); margin-bottom: 6px;">Revenue Velocity</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                +77.78% YoY and +28.03% MoM expansion reaching $441,474.94 in peak monthly invoicing with high order integrity.
+              </p>
+            </div>
+            <div class="card" style="border-top: 3px solid var(--accent-amber);">
+              <h4 style="color: var(--accent-amber); margin-bottom: 6px;">Concentration Exposure</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Over 56% of revenue in 3 geographies; top 2 corporate accounts yield 14.7% of global sales.
+              </p>
+            </div>
+            <div class="card" style="border-top: 3px solid var(--accent-red);">
+              <h4 style="color: var(--accent-red); margin-bottom: 6px;">Balance Sheet Drag</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                $30.53M in inventory on hand against $5.78M historical COGS, immobilizing critical liquidity.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 2: High Velocity Financial Performance -->
+      <section class="slide" id="slide-1">
+        <h2 class="slide-heading">Operational Velocity & Core Revenue</h2>
+        <p class="slide-subheading">Record top-line momentum driven by high fulfillment efficiency and robust monthly demand.</p>
+
+        <div class="grid-kpi">
+          <div class="card kpi-card">
+            <span class="label">Latest Monthly Revenue</span>
+            <div class="value">$441.5K <span class="delta delta-green">+28.0%</span></div>
+            <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">MoM Growth</span>
+          </div>
+          <div class="card kpi-card">
+            <span class="label">YoY Growth Velocity</span>
+            <div class="value">+77.8%</div>
+            <span style="font-size: 0.75rem; color: var(--accent-green); margin-top: 4px;">Rapid Market Demand</span>
+          </div>
+          <div class="card kpi-card">
+            <span class="label">Total Cumulative Invoiced</span>
+            <div class="value">$9.60M</div>
+            <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Across 326 Logged Orders</span>
+          </div>
+          <div class="card kpi-card">
+            <span class="label">Order Fulfillment Rate</span>
+            <div class="value">92.9%</div>
+            <span style="font-size: 0.75rem; color: var(--accent-blue); margin-top: 4px;">Cancellations: 1.8%</span>
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          <div class="card">
+            <h4 style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Top Performer Product Highlight</h4>
+            <div style="background: rgba(56, 139, 253, 0.1); border: 1px solid rgba(56, 139, 253, 0.2); border-radius: 8px; padding: 14px; margin-bottom: 12px;">
+              <h3 style="color: #fff; font-size: 1.25rem;">1992 Ferrari 360 Spider red</h3>
+              <p style="color: var(--accent-blue); font-weight: 600; font-size: 1.05rem; margin-top: 2px;">$276,839.98 Total Revenue</p>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">1,808 units delivered globally</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.45;">
+              Anchor automotive lines (Classic & Vintage Cars) drive the majority of volume and margin velocity, maintaining consumer retention and order frequency.
+            </p>
+          </div>
+
+          <div class="card">
+            <h4 style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Monthly Revenue Trajectory ($)</h4>
+            <div class="chart-box">
+              <canvas id="revGrowthChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 3: Portfolio Diagnostics & Margin Disparity -->
+      <section class="slide" id="slide-2">
+        <h2 class="slide-heading">Product Portfolio & Margin Diagnostic</h2>
+        <p class="slide-subheading">Classic Cars serve as primary revenue engines, while auxiliary product lines show distinct margin profiles.</p>
+
+        <div class="grid-2col">
+          <div class="card">
+            <h4 style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Revenue Contribution by Product Line</h4>
+            <div class="chart-box">
+              <canvas id="productLineChart"></canvas>
+            </div>
+          </div>
+
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 12px;">Portfolio Contribution Breakout</h4>
+              
+              <div class="risk-bar-container">
+                <div class="risk-bar-meta">
+                  <span>Classic Cars ($3.85M | Margin: 39.6%)</span>
+                  <span style="color: var(--accent-blue);">40.1% Share</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width: 40.1%; background: var(--accent-blue);"></div></div>
+              </div>
+
+              <div class="risk-bar-container">
+                <div class="risk-bar-meta">
+                  <span>Vintage Cars ($1.80M | Margin: 41.0%)</span>
+                  <span style="color: var(--accent-cyan);">18.7% Share</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width: 18.7%; background: var(--accent-cyan);"></div></div>
+              </div>
+
+              <div class="risk-bar-container">
+                <div class="risk-bar-meta">
+                  <span>Motorcycles ($1.12M | Margin: 41.8%)</span>
+                  <span style="color: var(--accent-green);">11.7% Share</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width: 11.7%; background: var(--accent-green);"></div></div>
+              </div>
+
+              <div class="risk-bar-container">
+                <div class="risk-bar-meta">
+                  <span>Trains ($188.5K | Margin: 34.7%)</span>
+                  <span style="color: var(--accent-red);">2.0% Share</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width: 2.0%; background: var(--accent-red);"></div></div>
+              </div>
+            </div>
+
+            <div style="background: rgba(209, 153, 34, 0.1); border: 1px solid rgba(209, 153, 34, 0.25); border-radius: 8px; padding: 12px; margin-top: 10px;">
+              <strong style="color: var(--accent-amber); font-size: 0.85rem;">Analytical Verdict:</strong>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">
+                Automotive and Motorcycle catalogs drive ~70% of total revenue with healthy >40% margins. Conversely, Trains represent a low-margin capital drain requiring catalog restructuring.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 4: Strategic Vulnerabilities & Concentration Risks -->
+      <section class="slide" id="slide-3">
+        <h2 class="slide-heading">Primary Systemic & Structural Risks</h2>
+        <p class="slide-subheading">Triple-point exposure across balance sheet inventory, customer accounts, and collections.</p>
+
+        <div class="grid-3col" style="flex: 1;">
+          <!-- Risk 1 -->
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="color: var(--accent-red); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Inventory Bottleneck</div>
+              <h3 style="font-size: 1.4rem; color: #fff; margin: 8px 0;">$30.53M Stock</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.45;">
+                Severe working capital lockup. Current warehouse inventory ($30.5M across 555K units) dwarfs historical COGS ($5.78M) by over 5.2x, causing high holding and deprecation costs.
+              </p>
+            </div>
+            <div style="background: #21262d; border-radius: 6px; padding: 10px; font-size: 0.8rem; color: var(--text-muted);">
+              Turnover Ratio: <span style="color: var(--accent-red); font-weight: 600;">0.19 (Sluggish)</span>
+            </div>
+          </div>
+
+          <!-- Risk 2 -->
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="color: var(--accent-amber); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Concentration Jenga Tower</div>
+              <h3 style="font-size: 1.4rem; color: #fff; margin: 8px 0;">56.0% Geographic</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.45;">
+                Over 56% of sales depend on three countries (USA 34.1%, Spain 11.4%, France 10.5%). The top 2 accounts (Euro+ & Mini Gifts) make up 14.7% ($1.41M) of total sales.
+              </p>
+            </div>
+            <div style="background: #21262d; border-radius: 6px; padding: 10px; font-size: 0.8rem; color: var(--text-muted);">
+              Personnel Risk: <span style="color: var(--accent-amber); font-weight: 600;">2 Reps = 24.4% Sales</span>
+            </div>
+          </div>
+
+          <!-- Risk 3 -->
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="color: var(--accent-cyan); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Realization & Dormancy Gap</div>
+              <h3 style="font-size: 1.4rem; color: #fff; margin: 8px 0;">19.7% Dormant</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.45;">
+                24 out of 122 registered customers have zero order history. Concurrently, an accounts receivable gap of $750.4K (7.8%) between invoiced ($9.60M) and collected ($8.85M) creates cash flow friction.
+              </p>
+            </div>
+            <div style="background: #21262d; border-radius: 6px; padding: 10px; font-size: 0.8rem; color: var(--text-muted);">
+              Uncollected AR: <span style="color: var(--accent-cyan); font-weight: 600;">$750.4K (7.8%)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 5: Strategic Action Roadmap -->
+      <section class="slide" id="slide-4">
+        <h2 class="slide-heading">Key Strategic Recommendations</h2>
+        <p class="slide-subheading">Actionable initiatives to optimize balance-sheet working capital and stabilize revenue foundations.</p>
+
+        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
+          <div class="rec-item">
+            <div class="rec-num">1</div>
+            <div class="rec-content">
+              <h4>Rationalize Working Capital & Liquidate Stagnant Inventory</h4>
+              <p>
+                Implement structured promotional bundling and secondary distributor clearances for low-velocity catalog lines (specifically Trains at 34.7% margin and 2.0% sales). Free up portions of the $30.53M held in warehouse stock to align storage capacity with true order velocity.
+              </p>
+            </div>
+          </div>
+
+          <div class="rec-item" style="border-left-color: var(--accent-cyan);">
+            <div class="rec-num" style="background: var(--accent-cyan);">2</div>
+            <div class="rec-content">
+              <h4>Launch Targeted Reactivation Campaign for Dormant Accounts</h4>
+              <p>
+                Direct regional sales reps toward the 24 registered clients (19.7% of total portfolio) that have never placed an initial order. Deploy introductory volume incentives focused on proven anchor SKUs (Classic Cars) to acquire immediate recurring revenue at low acquisition friction.
+              </p>
+            </div>
+          </div>
+
+          <div class="rec-item" style="border-left-color: var(--accent-amber);">
+            <div class="rec-num" style="background: var(--accent-amber);">3</div>
+            <div class="rec-content">
+              <h4>Diversify Geographic and Key Account Exposure</h4>
+              <p>
+                Mitigate vulnerability from the top two clients (14.7% share) and top 3 regions (56% share) by rolling out tiered volume pricing to mid-tier distributors, simultaneously accelerating outbound expansion across underserved EMEA and APAC territories.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <footer class="deck-footer">
+      <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+      <div class="slide-dots" id="dotsContainer"></div>
+      <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </footer>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const dotsContainer = document.getElementById('dotsContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // Create pagination dots
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      if (idx === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(idx));
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function updateDeck() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentSlide);
+      });
+      dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === currentSlide);
+      });
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === totalSlides - 1;
+    }
+
+    function changeSlide(direction) {
+      if (currentSlide + direction >= 0 && currentSlide + direction < totalSlides) {
+        currentSlide += direction;
+        updateDeck();
+      }
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateDeck();
+    }
+
+    // Keyboard Arrow Navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Space') {
+        changeSlide(1);
+      } else if (e.key === 'ArrowLeft') {
+        changeSlide(-1);
+      }
+    });
+
+    // Chart.js Visualizations
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Revenue Velocity Line Chart
+      const ctxRev = document.getElementById('revGrowthChart').getContext('2d');
+      new Chart(ctxRev, {
+        type: 'line',
+        data: {
+          labels: ['Dec 04', 'Jan 05', 'Feb 05', 'Mar 05', 'Apr 05', 'May 05'],
+          datasets: [{
+            label: 'Monthly Revenue ($)',
+            data: [428838, 307737, 317192, 359712, 344821, 441475],
+            borderColor: '#388bfd',
+            backgroundColor: 'rgba(56, 139, 253, 0.15)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.35,
+            pointRadius: 4,
+            pointBackgroundColor: '#388bfd'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { grid: { color: '#21262d' }, ticks: { color: '#8b949e', font: { size: 11 } } },
+            y: { grid: { color: '#21262d' }, ticks: { color: '#8b949e', font: { size: 10 } } }
+          }
+        }
+      });
+
+      // 2. Product Line Breakdown Bar Chart
+      const ctxProd = document.getElementById('productLineChart').getContext('2d');
+      new Chart(ctxProd, {
+        type: 'bar',
+        data: {
+          labels: ['Classic Cars', 'Vintage Cars', 'Motorcycles', 'Trucks/Buses', 'Planes', 'Ships', 'Trains'],
+          datasets: [{
+            label: 'Revenue ($M)',
+            data: [3.85, 1.80, 1.12, 1.02, 0.95, 0.66, 0.19],
+            backgroundColor: [
+              '#388bfd',
+              '#39c5cf',
+              '#3fb950',
+              '#d29922',
+              '#8b949e',
+              '#6e7681',
+              '#f85149'
+            ],
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#8b949e', font: { size: 10 } } },
+            y: { grid: { color: '#21262d' }, ticks: { color: '#8b949e', font: { size: 10 } } }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
